@@ -17,7 +17,7 @@ pipeline.py orchestrates the pipeline.
 
 Insert Robot Arm Image Here (Insert)
 
-The robot arm is designed by HowToMechatronics. You can find the guide to build it [here](https://howtomechatronics.com/tutorials/arduino/diy-arduino-robot-arm-with-smartphone-control/). 
+The robot arm is designed by HowToMechatronics. You can find the guide to build it [here](https://howtomechatronics.com/tutorials/arduino/diy-arduino-robot-arm-with-smartphone-control/). As for 3D print settings, I generally used a 60% infil and 5 to 6 walls, but it varied by part.
 
 Insert Cutting board image here (insert)
 
