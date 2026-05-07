@@ -3,23 +3,21 @@ Robot Arm Photo here (Insert)
 # AVA (Autonomous Vision Arm)
 AVA is a 5 DOF robot arm that uses computer vision to pick and place objects autonomously. A camera placed above the workspace detects objects by their HSV colour values and stores their centroid coordinates. The robot arm then uses homography and inverse kinematics to locate a cube, pick it up, and place it on a target plate. Here's a video of what it does:
 
-## Demo
-
 Insert pink_purple video here (Insert)
 
 Check the demos folder for more demos!
 
-## Contents
+## README Contents
 - [Pipeline](#pipeline)
 - [Hardware](#hardware)
 - [Wiring](#wiring)
 - [Calibration](#calibration)
-- [Issues and Improvements](#issuesandimprovements)
+- [Contact](#contact)
 
 ## Pipeline
 1. Colour Detection (object_detection_4.py): Camera detects the cube(s) and plate(s) by their HSV values and returns their centroid pixel coordinates.
 2. Pixel to World Coordinates (transform_coordinates_3.py): pixel coordinates (px) are transformed to world coordinates (mm) using a homography matrix.
-3. Joint angles from Inverse Kinematics (ik_solver_2.py): converts the (x, y) position in mm on the workspace using a bunch of cosine law to 4 joint angles (excluding wrist roll).
+3. Joint angles from Inverse Kinematics (ik_solver_2.py): converts the (x, y) position in mm on the workspace to 4 joint angles (excluding wrist roll and gripper).
 4. Communicate to Arduino (serial_comms_comp_1.py): receives the joint angles and sends instructions to the Arduino through serial communication.
 5. Arduino Execution (serial_comms.ino): Arduino drives each servo to its target using interpolation.
 
@@ -29,7 +27,7 @@ Requirements for these files are the numpy, opencv, pyserial, and scipy pip pack
 
 Insert Robot Arm Image Here (Insert)
 
-The robot arm is designed by HowToMechatronics. You can find the .STEP files and how to build it [here](https://howtomechatronics.com/tutorials/arduino/diy-arduino-robot-arm-with-smartphone-control/). As for 3D print settings, I generally used a 60% infil and 5 to 6 walls using this [filament](https://www.amazon.ca/OVERTURE-Filament-Consumables-Dimensional-Accuracy/dp/B07PGZNM34/ref=sr_1_7?crid=32Y6RWAJZ1P58&dib=eyJ2IjoiMSJ9.oENE_oqNuW4ibJTvFRA6tV6PlZP92wlCZInNHlAr0BNb2jDfTTaqZTIXCzrx2JLeKTxwQnpkKTCuHsCiJYJQTrIUSta4BO6iHQ_jCmz1FPFDynscHQc8Sv2tG0Il6_oq4D35H3MQWhMed2pzaSoSnwq-K75yQHHAKeG4J9MJh2YWJ9akym9AysOcIjxp6XfoRiqfyX1EDPeSoQdwuY8pvQiLWgJkpAKrE8egRtiP5-n6g-5x-wK6x-NKak0zJjDzsz_kX38mZQl3ljUAowuroQ3kd8kN3tBLzaJiMMN6D34.gkanKJlYCuA_DmxeTz90W-1bZWYO52E53FQnxGwNwcg&dib_tag=se&keywords=pla%2B1.75mm&qid=1773802071&sprefix=pla%2B1%2B75mm%2Caps%2C117&sr=8-7&th=), but it varied by part.
+The robot arm is designed by HowToMechatronics. You can find the .STEP files and how to build it [here](https://howtomechatronics.com/tutorials/arduino/diy-arduino-robot-arm-with-smartphone-control/). As for 3D print settings, I generally used a 60% infill and 5 to 6 walls using this [filament](https://www.amazon.ca/OVERTURE-Filament-Consumables-Dimensional-Accuracy/dp/B07PGZNM34/ref=sr_1_7?crid=32Y6RWAJZ1P58&dib=eyJ2IjoiMSJ9.oENE_oqNuW4ibJTvFRA6tV6PlZP92wlCZInNHlAr0BNb2jDfTTaqZTIXCzrx2JLeKTxwQnpkKTCuHsCiJYJQTrIUSta4BO6iHQ_jCmz1FPFDynscHQc8Sv2tG0Il6_oq4D35H3MQWhMed2pzaSoSnwq-K75yQHHAKeG4J9MJh2YWJ9akym9AysOcIjxp6XfoRiqfyX1EDPeSoQdwuY8pvQiLWgJkpAKrE8egRtiP5-n6g-5x-wK6x-NKak0zJjDzsz_kX38mZQl3ljUAowuroQ3kd8kN3tBLzaJiMMN6D34.gkanKJlYCuA_DmxeTz90W-1bZWYO52E53FQnxGwNwcg&dib_tag=se&keywords=pla%2B1.75mm&qid=1773802071&sprefix=pla%2B1%2B75mm%2Caps%2C117&sr=8-7&th=), but it varied by part.
 
 Insert Cutting board image here (insert)
 
@@ -41,7 +39,7 @@ I used a wooden cutting board to mount the arm and its electronics. Note that th
 | M4 Bolts | 25 | Claw joints |
 | M4 Nyloc Nuts | N/A | For claw bolts |
 
-Although the guide doesn't meantion them, appropriate heatset inserts can help keep the fasteners in place and improve the structural integrity of the arm. Note that a power screwdriver/drill can be very helpful in assembling the robot arm as well.
+Although the guide doesn't mention them, appropriate heatset inserts can help keep the fasteners in place and improve the structural integrity of the arm. Note that a power screwdriver/drill can be very helpful in assembling the robot arm as well.
 
 A major issue I experienced with the robot arm was with the SG90 servo that controlled the claw pitch. The part of the servo horn that fixed onto the servo was too short and rubbed against another part of the robot arm, introducing enough friction to burn out one of the SG90s. I have attached a modified, 3D-printable servo horn (SG90ModifiedHorn.sldprt) that addresses this problem.
 
@@ -81,8 +79,9 @@ Rulers, protractors, tape measures, and the human eye are inaccurate methods of 
 - arm_calibration_3b.py: instructs the robot arm to move to listed world coordinate. The user is instructed to click on the actual position of the claw using the camera feed to calculate the error between the instructed position and the actual position. The error across multiple reachable points and the Radial Basis Function from the Scipy package are used to calculate the offsets for the robot arm, which is outputted to an arm_corrections.json file imported by pipeline.py.
 - colour_picker_4a.py: instructs the user to click on multiple points of an object through the camera feed to detect its HSV values. These HSV values are then added to object_detection_4.py by the user to detect said object.
 
-Addionally, ik_test_2a.py was used to test if the equations I wrote in the ik_solver file were plausible and realistic. 
+Additionally, ik_test_2a.py was used to test if the equations I wrote in the ik_solver file were plausible and realistic. The workspace is limited by the arm's reach, so objects placed too close to the base or too far from it will not be detected or reached reliably. One other thing to note is that AVA is sensitive to lighting conditions. Significant changes to the lighting used to find the HSV values will throw off the HSV detection and require retuning. 
 
 Calibration is one of the most important steps to building a reliable and accurate robot arm. Acquiring a few tools to measure distances and angles accurately is part of the equation that differentiates hobbyist and industrial grade mechanisms. Unfortunately I didn't have access to any, but I would definitely procure some if I was to reiterate the project. 
 
-## Issues and Improvements
+## Contact
+If you have any questions or comments regarding the project, feel free to contact me at presleyprince007 at gmail dot com. Visit my website at [presleyprince.com](https://presleyprince.com/) to learn more about me!
