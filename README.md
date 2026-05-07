@@ -3,13 +3,12 @@ AVA is a 5 DOF robot arm that uses computer vision to pick and place objects aut
 
 <img width="800" height="450" alt="AVA" src="https://github.com/user-attachments/assets/bd9d4b1d-1c0b-4992-992f-8e90d1dc3390" />
 
-Check the demos folder for more demos!
-
 ## README Contents
 - [Pipeline](#pipeline)
 - [Hardware](#hardware)
 - [Wiring](#wiring)
 - [Calibration](#calibration)
+- [Demos](#Demos)
 - [Contact](#contact)
 
 ## Pipeline
@@ -80,6 +79,12 @@ Rulers, protractors, tape measures, and the human eye are inaccurate methods of 
 Additionally, ik_test_2a.py was used to test if the equations I wrote in the ik_solver file were plausible and realistic. The workspace is limited by the arm's reach, so objects placed too close to the base or too far from it will not be detected or reached reliably. One other thing to note is that AVA is sensitive to lighting conditions. Significant changes to the lighting used to find the HSV values will throw off the HSV detection and require retuning. 
 
 Calibration is one of the most important steps to building a reliable and accurate robot arm. Acquiring a few tools to measure distances and angles accurately is part of the equation that differentiates hobbyist and industrial grade mechanisms. Unfortunately I didn't have access to any, but I would definitely procure some if I was to reiterate the project. 
+
+## Demos
+
+Pink cube to purple plate: https://drive.google.com/file/d/1g5vMX8ZxmMx2rPUanG-CIyJ6bD0zU2Qa/view?usp=drive_link
+Green cube to orange plate: https://drive.google.com/file/d/1OwsJqXrcNPqwAlcxAHC9FGa-EneP5tmk/view?usp=drive_link
+Both together: https://drive.google.com/file/d/1gi9gyjhqv0hccbdI8k9mWV1aGN5gNt26/view?usp=drive_link
 
 ## Contact
 If you have any questions or comments regarding the project, feel free to contact me at presleyprince007 at gmail dot com. Visit my website at [presleyprince.com](https://presleyprince.com/) to learn more about me!
