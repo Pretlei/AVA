@@ -1,3 +1,5 @@
+Robot Arm Photo here (Insert)
+
 # AVA (Autonomous Vision Arm)
 AVA is a 5 DOF robot arm that uses computer vision to pick and place objects autonomously. A camera placed above the workspace detects objects by their HSV colour values and stores their centroid coordinates. The robot arm then uses homography and inverse kinematics to locate a cube, pick it up, and place it on a target plate. Here's a video of what it does:
 
