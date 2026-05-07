@@ -1,26 +1,27 @@
 # AVA (Autonomous Vision Arm)
 AVA is a 5 DOF robot arm that uses computer vision to pick and place objects autonomously. A camera placed above the workspace detects objects by their HSV colour values and stores their centroid coordinates. The robot arm then uses homography and inverse kinematics to locate a cube, pick it up, and place it on a target plate. Here's a video of what it does:
 
-Insert GIF here (Insert)
+## Demo
+
+Insert pink_purple video here (Insert)
+
+Check the demos folder for more demos!
 
 ## Contents
 - [Pipeline](#pipeline)
 - [Hardware](#hardware)
 - [Wiring](#wiring)
-- [Software Requirements](#software-requirements)
 - [Calibration](#calibration)
-- [Quick Start](#quick-start)
-- [Known Issues](#known-issues)
+- [Issues and Improvements](#issuesandimprovements)
 
 ## Pipeline
-
 1. Colour Detection (object_detection_4.py): Camera detects the cube(s) and plate(s) by their HSV values and returns their centroid pixel coordinates.
-2. Pixel to World Coordinates (transform_coordinates_3.py): pixel coordinates (px) are transformed to world coordinates (mm) using a matrix (homography).
-3. Joint angles from Inverse Kinematics (ik_solver_2.py): converts the (x, y) position in mm on the workspace using a bunch of cosine law to 4 joint angles (excluding wrist roll, which is irrelevant).
+2. Pixel to World Coordinates (transform_coordinates_3.py): pixel coordinates (px) are transformed to world coordinates (mm) using a homography matrix.
+3. Joint angles from Inverse Kinematics (ik_solver_2.py): converts the (x, y) position in mm on the workspace using a bunch of cosine law to 4 joint angles (excluding wrist roll).
 4. Communicate to Arduino (serial_comms_comp_1.py): receives the joint angles and sends instructions to the Arduino through serial communication.
 5. Arduino Execution (serial_comms.ino): Arduino drives each servo to its target using interpolation.
 
-pipeline.py orchestrates the pipeline. 
+Requirements for these files are the numpy, opencv, pyserial, and scipy pip packages. Install these, upload serial_comms.ino to the Arduino, and run pipeline.py to orchestrate the pipeline. 
 
 ## Hardware
 
@@ -67,4 +68,19 @@ Before mounting the servo horns, make sure to find their minimum and maximum PWM
 | b | Claw (Claw Pitch) | 120 | 200 | 480 | 385 |
 | c | Gripper | 230 | 300 | 370 | |
 
-Additionally, in order to run the computer vision required to detect the cubes and plates, the laptop has to be constantly plugged in to the Arduino's USB cable. It is entirely possible to run the robot arm independently if the laptop was replaced by a more capable single board computer like a Raspberry Pi.  
+Additionally, in order to run the computer vision required to detect the cubes and plates, the laptop has to be constantly plugged in to the Arduino's USB cable. It is entirely possible to run the robot arm independently if the laptop was replaced by a single board computer like a Raspberry Pi.  
+
+## Calibration
+
+Insert Camera Positioning Image (Insert)
+
+Rulers, protractors, tape measures, and the human eye are inaccurate methods of measurement for something as precise as a robotic arm, but they were all I had access to. I used software to minimize the error as much as possible. Here's a rundown of each file involved in calibration.
+- calibrate_camera_3a.py: input the coordinates of measured, marked spots on the workspace. The user is instructed to click on each one of these measured spots to generate a homography matrix that converts pixel (px) to world (mm) coordinates, which is outputted to a calibration.json file. Note that the camera does not have to be placed directly above the workspace for this to work; the matrix takes care of any slants/inaccuracies in the camera positioning. 
+- arm_calibration_3b.py: instructs the robot arm to move to listed world coordinate. The user is instructed to click on the actual position of the claw using the camera feed to calculate the error between the instructed position and the actual position. The error across multiple reachable points and the Radial Basis Function from the Scipy package are used to calculate the offsets for the robot arm, which is outputted to an arm_corrections.json file imported by pipeline.py.
+- colour_picker_4a.py: instructs the user to click on multiple points of an object through the camera feed to detect its HSV values. These HSV values are then added to object_detection_4.py by the user to detect said object.
+
+Addionally, ik_test_2a.py was used to test if the equations I wrote in the ik_solver file were plausible and realistic. 
+
+Calibration is one of the most important steps to building a reliable and accurate robot arm. Acquiring a few tools to measure distances and angles accurately is part of the equation that differentiates hobbyist and industrial grade mechanisms. Unfortunately I didn't have access to any, but I would definitely procure some if I was to reiterate the project. 
+
+## Issues and Improvements
