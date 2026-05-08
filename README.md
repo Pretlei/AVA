@@ -1,5 +1,5 @@
 # AVA (Autonomous Vision Arm)
-AVA is a 5 DOF robot arm that uses computer vision to pick and place objects autonomously. A camera placed above the workspace detects objects by their HSV colour values and stores their centroid coordinates. The robot arm then uses homography and inverse kinematics to locate a cube, pick it up, and place it on a target plate. Here's a sped up video of what it does:
+AVA is a 5 DOF robot arm that uses computer vision to pick and place objects autonomously. A camera placed above the workspace detects objects by their HSV values and stores their centroid coordinates. The robot arm then uses homography and inverse kinematics to locate the object (cube), pick it up, and place it on the second target object (plate). Here's a sped up video of what it does:
 
 <img width="800" height="450" alt="AVA" src="https://github.com/user-attachments/assets/bd9d4b1d-1c0b-4992-992f-8e90d1dc3390" />
 
@@ -18,7 +18,7 @@ AVA is a 5 DOF robot arm that uses computer vision to pick and place objects aut
 4. Communicate to Arduino (serial_comms_comp_1.py): receives the joint angles and sends instructions to the Arduino through serial communication.
 5. Arduino Execution (serial_comms.ino): Arduino drives each servo to its target using interpolation.
 
-Requirements for these files are the numpy, opencv, pyserial, and scipy pip packages. Install these, upload serial_comms.ino to the Arduino, and run pipeline.py to orchestrate the pipeline. 
+Requirements for these files are the numpy, opencv, pyserial, and scipy pip packages. Install these using requirements.txt, upload serial_comms.ino to the Arduino, and run pipeline.py to orchestrate the pipeline. 
 
 ## Hardware
 
@@ -44,7 +44,7 @@ However, I would recommend using another robot arm (such as the SO 101) to pursu
 
 ## Wiring
 
-The waist, shoulder, and elbow are controlled by MG996R (black) servos. The other three (wrist roll, wrist pitch, and gripper) are controlled by SG90 (blue) servos. 
+The waist, shoulder, and elbow are actuated by MG996R (black) servos. The other three (wrist roll, wrist pitch, and gripper) are actuated by SG90 (blue) servos. 
 
 | Name | Image |
 | :--- | :--- |
@@ -55,9 +55,9 @@ The waist, shoulder, and elbow are controlled by MG996R (black) servos. The othe
 | **5V 6A Wall Adapter** | <img src="https://github.com/user-attachments/assets/f2aac2b8-6f49-4a94-aeae-da8a2b52430e" width="375" height="500"> |
 
 
-Unlike the guide, I connected the servos to a PCA9685 servo driver. An Arduino UNO R3 controls the servos through 5V, GND, SDA, and SCL connections to the servo driver. The servos were powered using a 5V 6A wall adapter, which was connected to a DC Barrel Jack to Terminal block adapter, which was wired to the servo driver. To prevent voltage dips, I also installed a 2200 uF, 16 V capacitor between the block adapter and the servo driver. Note that the Arduino cannot provide enough current for 6 servos since it can only provide around 500 mA of current (MG996R servos can draw up to 2.5A of current, SG90 servos up to 600 mA). 
+Unlike the guide, I connected the servos to a PCA9685 servo driver. An Arduino UNO R3 controls the servos through 5V, GND, SDA, and SCL connections to the servo driver. The servos were powered using a 5V 6A wall adapter, which was connected to a DC barrel jack to terminal block adapter, which was wired to the servo driver. To prevent voltage dips, I also installed a 2200 uF, 16 V capacitor between the block adapter and the servo driver. Note that the Arduino cannot provide enough current for 6 servos since it can only provide around 200 mA of maximum current (MG996R servos can draw up to 2.5A of current, SG90 servos up to 600 mA). 
 
-Before mounting the servo horns, make sure to find their minimum and maximum PWM values, then set it to the PWM value associated with 90 degrees. This calibration prevents inaccuracies later on in the build. Many servos don't use their full range, but it's useful to know what they are for potential adjustments you want to make. Although every servo has its own range, here's a table of servo information that I found was relevant during calibration:
+Before mounting the servo horns, make sure to find their minimum and maximum PWM values, then set it to the PWM value most closely associated with 90 degrees. This calibration prevents inaccuracies later on in the build. Many servos don't use their full range, but it's useful to know what they are for potential adjustments you want to make. Although every servo has its own range, here's a table of servo information that I found was relevant during calibration:
 
 | Servo Name | Purpose | MIN VAL | REST | MAX VAL | Tick at Horizontal |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -68,7 +68,7 @@ Before mounting the servo horns, make sure to find their minimum and maximum PWM
 | b | Claw (Claw Pitch) | 120 | 200 | 480 | 385 |
 | c | Gripper | 230 | 300 | 370 | |
 
-Additionally, in order to run the computer vision required to detect the cubes and plates, the laptop has to be constantly plugged in to the Arduino's USB cable. It is entirely possible to run the robot arm independently if the laptop was replaced by a single board computer like a Raspberry Pi.  
+Additionally, in order to run the computer vision required to detect the cubes and plates, the laptop has to be constantly plugged in to the Arduino's USB cable. It is entirely possible to run the robot arm independently if the laptop was replaced by a capable single board computer like a Raspberry Pi.  
 
 ## Calibration
 
@@ -83,14 +83,14 @@ Additionally, in order to run the computer vision required to detect the cubes a
 | <img src="https://github.com/user-attachments/assets/d6a6bf64-badc-4604-87a7-eb83ac093947" width="820"> |
 
 
-Rulers, protractors, tape measures, and the human eye are inaccurate methods of measurement for something as precise as a robotic arm, but they were all I had access to physically. I used software to minimize the error as much as possible. Here's a rundown of each file involved in calibration.
+Rulers, tape measures, protractors, and the human eye are inaccurate methods of measurement for something as precise as a robotic arm, but they were all the physical tools I had access to. I used software to minimize the error as much as possible. Here's a rundown of each file involved in calibration.
 - calibrate_camera_3a.py: input the coordinates of measured, marked spots on the workspace. The user is instructed to click on each one of these measured spots to generate a homography matrix that converts pixel (px) to world (mm) coordinates, which is outputted to a calibration.json file. Note that the camera does not have to be placed directly above the workspace for this to work; the matrix takes care of any slants/inaccuracies in the camera positioning. 
-- arm_calibration_3b.py: instructs the robot arm to move to listed world coordinate. The user is instructed to click on the actual position of the claw using the camera feed to calculate the error between the instructed position and the actual position. The error across multiple reachable points and the Radial Basis Function from the Scipy package are used to calculate the offsets for the robot arm, which is outputted to an arm_corrections.json file imported by pipeline.py.
+- arm_calibration_3b.py: instructs the robot arm to move to listed world coordinate. The user is instructed to click on the actual position of the claw using the camera feed to calculate the error between the instructed position and the actual position. The error across multiple reachable points and the Radial Basis Function from the scipy package are used to calculate the offsets for the robot arm, which is outputted to an arm_corrections.json file, which is then imported by pipeline.py.
 - colour_picker_4a.py: instructs the user to click on multiple points of an object through the camera feed to detect its HSV values. These HSV values are then added to object_detection_4.py by the user to detect said object.
 
 Additionally, ik_test_2a.py was used to test if the equations I wrote in the ik_solver file were plausible and realistic. The workspace is limited by the arm's reach, so objects placed too close to the base or too far from it will not be detected or reached reliably. One other thing to note is that AVA is sensitive to lighting conditions. Significant changes to the lighting used to find the HSV values will throw off the HSV detection and require retuning. 
 
-Calibration is one of the most important steps to building a reliable and accurate robot arm. Acquiring a few tools to measure distances and angles accurately is part of the equation that differentiates hobbyist and industrial grade mechanisms. Unfortunately I didn't have access to any, but I would definitely procure some if I was to reiterate the project. 
+It should be recognized that calibration is one of the most important steps to building a reliable and accurate robot arm. Acquiring a few tools to measure distances and angles accurately is part of the equation that differentiates hobbyist and industrial grade mechanisms. Unfortunately I didn't have access to any, but I would definitely try to get access to some if I were to reiterate the project. 
 
 ## Demos
 
