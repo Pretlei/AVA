@@ -22,11 +22,11 @@ Requirements for these files are the numpy, opencv, pyserial, and scipy pip pack
 
 ## Hardware
 
-Insert Robot Arm Image Here (Insert)
+| Right Side View | Left Side View | Claw |
+| :---: | :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/7af33936-2a67-4e74-bb89-c9740e925422" width="300"> | <img src="https://github.com/user-attachments/assets/757c49c8-b6b5-4797-98ad-8f951bbd7750" width="300"> | <img src="https://github.com/user-attachments/assets/03f3d16b-795a-4f22-9045-d3c6e42b02c1" width="305"> |
 
 The robot arm is designed by HowToMechatronics. You can find the .STEP files and how to build it [here](https://howtomechatronics.com/tutorials/arduino/diy-arduino-robot-arm-with-smartphone-control/). As for 3D print settings, I generally used a 60% infill and 5 to 6 walls using this [filament](https://www.amazon.ca/OVERTURE-Filament-Consumables-Dimensional-Accuracy/dp/B07PGZNM34/ref=sr_1_7?crid=32Y6RWAJZ1P58&dib=eyJ2IjoiMSJ9.oENE_oqNuW4ibJTvFRA6tV6PlZP92wlCZInNHlAr0BNb2jDfTTaqZTIXCzrx2JLeKTxwQnpkKTCuHsCiJYJQTrIUSta4BO6iHQ_jCmz1FPFDynscHQc8Sv2tG0Il6_oq4D35H3MQWhMed2pzaSoSnwq-K75yQHHAKeG4J9MJh2YWJ9akym9AysOcIjxp6XfoRiqfyX1EDPeSoQdwuY8pvQiLWgJkpAKrE8egRtiP5-n6g-5x-wK6x-NKak0zJjDzsz_kX38mZQl3ljUAowuroQ3kd8kN3tBLzaJiMMN6D34.gkanKJlYCuA_DmxeTz90W-1bZWYO52E53FQnxGwNwcg&dib_tag=se&keywords=pla%2B1.75mm&qid=1773802071&sprefix=pla%2B1%2B75mm%2Caps%2C117&sr=8-7&th=), but it varied by part.
-
-Insert Cutting board image here (insert)
 
 I used a wooden cutting board to mount the arm and its electronics. Note that the guide does not specify the screws, nuts, and bolts used in the robot arm (except for the ones that come with the servos). So here's a table of what I used:
 
@@ -38,19 +38,22 @@ I used a wooden cutting board to mount the arm and its electronics. Note that th
 
 Although the guide doesn't mention them, appropriate heatset inserts can help keep the fasteners in place and improve the structural integrity of the arm. Note that a power screwdriver/drill can be very helpful in assembling the robot arm as well.
 
-A major issue I experienced with the robot arm was with the SG90 servo that controlled the claw pitch. The part of the servo horn that fixed onto the servo was too short and rubbed against another part of the robot arm, introducing enough friction to burn out one of the SG90s. I have attached a modified, 3D-printable servo horn (SG90ModifiedHorn.sldprt) that addresses this problem.
+A major issue I experienced with the robot arm was with the SG90 servo that controlled the claw pitch. The part of the servo horn that fixed onto the servo was too short and rubbed against another face that was parellel to it, introducing enough friction to burn out one of the SG90s. I have attached a modified, 3D-printable servo horn (SG90ModifiedHorn.sldprt) that addresses this problem.
 
 However, I would recommend using another robot arm (such as the SO 101) to pursue the same or similar projects altogether. This robot arm struggles with accuracy and has many flaws with its claw (3D printed gears, weight, etc.). An upside to this was that I learnt more about what makes a reliable robot arm by fixing its problems rather than mindlessly building it. Feel free to do the same, but beware of the frustration that comes along!
 
 ## Wiring
 
-Image of Wiring Setup (Insert)
+The waist, shoulder, and elbow are controlled by MG996R (black) servos. The other three (wrist roll, wrist pitch, and gripper) are controlled by SG90 (blue) servos. 
 
-The waist, shoulder, and elbow are controlled by MG996R servos. The other three (wrist roll, wrist pitch, and gripper) are controlled by SG90 servos. 
+| Name | Image |
+| :--- | :--- |
+| **Wiring Overview** | <img src="https://github.com/user-attachments/assets/6cda9b75-1ad2-4217-b26c-2c4d6f3f8054" width="500" height="375"> |
+| **Arduino (Elegoo) UNO R3** | <img src="https://github.com/user-attachments/assets/3baf7dcb-2cf4-4e0c-8258-9f2755177da1" width="500" height="375"> |
+| **Servo Driver** | <img src="https://github.com/user-attachments/assets/0fb14a2b-1f92-488e-93d4-16e2e5909e1f" width="500" height="375"> |
+| **Barrel Jack to Block Terminal Adapter** | <img src="https://github.com/user-attachments/assets/4e066ac4-bfce-4d0b-9ee0-e33dee9994d4" width="500" height="375"> |
+| **5V 6A Wall Adapter** | <img src="https://github.com/user-attachments/assets/f2aac2b8-6f49-4a94-aeae-da8a2b52430e" width="375" height="500"> |
 
-Image of Servo Driver (Insert)
-
-Image of Arduino (Insert)
 
 Unlike the guide, I connected the servos to a PCA9685 servo driver. An Arduino UNO R3 controls the servos through 5V, GND, SDA, and SCL connections to the servo driver. The servos were powered using a 5V 6A wall adapter, which was connected to a DC Barrel Jack to Terminal block adapter, which was wired to the servo driver. To prevent voltage dips, I also installed a 2200 uF, 16 V capacitor between the block adapter and the servo driver. Note that the Arduino cannot provide enough current for 6 servos since it can only provide around 500 mA of current (MG996R servos can draw up to 2.5A of current, SG90 servos up to 600 mA). 
 
@@ -69,9 +72,18 @@ Additionally, in order to run the computer vision required to detect the cubes a
 
 ## Calibration
 
-Insert Camera Positioning Image (Insert)
+| Workspace Overview with Calibration Marks | Camera Mount |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/530979c4-e834-4f1e-93c1-486e6d77ff58" width="400"> | <img src="https://github.com/user-attachments/assets/08492455-bd86-4658-a645-30bc1587a776" width="400"> |
 
-Rulers, protractors, tape measures, and the human eye are inaccurate methods of measurement for something as precise as a robotic arm, but they were all I had access to. I used software to minimize the error as much as possible. Here's a rundown of each file involved in calibration.
+<br>
+
+| Colour Detection and Centroid Extraction |
+| :---: |
+| <img src="https://github.com/user-attachments/assets/d6a6bf64-badc-4604-87a7-eb83ac093947" width="820"> |
+
+
+Rulers, protractors, tape measures, and the human eye are inaccurate methods of measurement for something as precise as a robotic arm, but they were all I had access to physically. I used software to minimize the error as much as possible. Here's a rundown of each file involved in calibration.
 - calibrate_camera_3a.py: input the coordinates of measured, marked spots on the workspace. The user is instructed to click on each one of these measured spots to generate a homography matrix that converts pixel (px) to world (mm) coordinates, which is outputted to a calibration.json file. Note that the camera does not have to be placed directly above the workspace for this to work; the matrix takes care of any slants/inaccuracies in the camera positioning. 
 - arm_calibration_3b.py: instructs the robot arm to move to listed world coordinate. The user is instructed to click on the actual position of the claw using the camera feed to calculate the error between the instructed position and the actual position. The error across multiple reachable points and the Radial Basis Function from the Scipy package are used to calculate the offsets for the robot arm, which is outputted to an arm_corrections.json file imported by pipeline.py.
 - colour_picker_4a.py: instructs the user to click on multiple points of an object through the camera feed to detect its HSV values. These HSV values are then added to object_detection_4.py by the user to detect said object.
